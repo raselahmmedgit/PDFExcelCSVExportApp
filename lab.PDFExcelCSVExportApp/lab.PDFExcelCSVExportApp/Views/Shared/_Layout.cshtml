@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PDFExcelCSVExportApp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- BEGIN datatable CSS-->
+    <link href="~/lib/jquery-datatable/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <!-- END datatable CSS-->
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
@@ -39,6 +42,9 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- BEGIN datatable JS-->
+    <script src="~/lib/jquery-datatable/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <!-- END datatable JS-->
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

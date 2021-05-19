@@ -69,3 +69,62 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+.w-20 {
+    width: 20% !important;
+}
+
+.w-25 {
+    width: 25% !important;
+}
+
+.w-30 {
+    width: 30% !important;
+}
+
+
+/*--------------------------------------------------------------
+ jQuery datatables
+--------------------------------------------------------------*/
+
+.dataTables_wrapper .dataTables_processing {
+    margin-top: 25px !important;
+}
+
+.dataTables_wrapper .dataTables_filter label {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #2c2b2e !important;
+}
+
+.dataTables_wrapper .dataTables_filter label {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #2c2b2e !important;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    width: 400px;
+    height: calc(1.5em + .75rem + 4px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #2c2b2e !important;
+    background-color: #fff !important;
+    background-clip: padding-box;
+    border: 1px solid #000 !important;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    margin-right: 20px;
+}
+
+    .dataTables_wrapper .dataTables_filter input:focus {
+        color: #495057;
+        background-color: #fff;
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.4);
+    }
