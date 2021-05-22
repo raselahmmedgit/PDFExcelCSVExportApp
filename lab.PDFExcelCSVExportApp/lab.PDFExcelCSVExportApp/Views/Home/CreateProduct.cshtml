@@ -1,0 +1,42 @@
+﻿@model lab.PDFExcelCSVExportApp.ViewModels.ProductViewModel
+@{
+    ViewData["Title"] = "Create Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12 mt-6">
+        <form method="post" asp-area="" asp-controller="Home" asp-action="CreateProduct" class="text-center">
+            <h1 class="mb-3 font-weight-normal">Forgot password</h1>
+            <div class="validation-summary mb-3">
+                <div asp-validation-summary="All" class="text-danger"></div>
+            </div>
+            <div class="form-group mb-3">
+                <label for="Name" class="sr-only">Product Name</label>
+                <input type="text" id="Name" name="Name" class="form-control" placeholder="Product Name" required autofocus>
+            </div>
+            <div class="form-group mb-3">
+                <dnt-captcha asp-captcha-generator-max="30"
+                             asp-captcha-generator-min="1"
+                             asp-captcha-generator-language="English"
+                             asp-captcha-generator-display-mode="SumOfTwoNumbersToWords"
+                             asp-use-relative-urls="true"
+                             asp-placeholder="Security code as a number"
+                             asp-validation-error-message="Please enter the security code as a number."
+                             asp-font-name="Tahoma"
+                             asp-font-size="60"
+                             asp-fore-color="#333333"
+                             asp-back-color="#ccc"
+                             asp-text-box-class="form-control"
+                             asp-text-box-template="{0}"
+                             asp-validation-message-class="text-danger"
+                             asp-refresh-button-class="btn-refresh"
+                             asp-use-noise="true" asp-dir="ltr" />
+            </div>
+            <div class="mt-5">
+                <input type="hidden"  id="Id" name="Id" value="@Model.Id" />
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</div>

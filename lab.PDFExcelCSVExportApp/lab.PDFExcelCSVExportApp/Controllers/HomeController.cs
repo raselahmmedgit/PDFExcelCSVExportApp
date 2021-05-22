@@ -2,6 +2,7 @@
 using CsvHelper.Configuration;
 using DataTables.AspNet.AspNetCore;
 using DataTables.AspNet.Core;
+using DNTCaptcha.Core;
 using lab.PDFExcelCSVExportApp.Helpers;
 using lab.PDFExcelCSVExportApp.Models;
 using lab.PDFExcelCSVExportApp.ViewModels;
@@ -20,10 +21,12 @@ namespace lab.PDFExcelCSVExportApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IDNTCaptchaValidatorService _validatorService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IDNTCaptchaValidatorService validatorService)
         {
             _logger = logger;
+            _validatorService = validatorService;
         }
 
         public IActionResult Index()
@@ -67,6 +70,40 @@ namespace lab.PDFExcelCSVExportApp.Controllers
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        [HttpGet]
+        public IActionResult CreateProduct()
+        {
+            var productViewModel = new ProductViewModel();
+            productViewModel.Id = 1;
+            return View(productViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ValidateDNTCaptcha(
+            ErrorMessage = "Please enter the security code as a number.",
+            CaptchaGeneratorLanguage = Language.English,
+            CaptchaGeneratorDisplayMode = DisplayMode.SumOfTwoNumbersToWords)]
+        public IActionResult CreateProduct(ProductViewModel model)
+        {
+            try
+            {
+                //if (!_validatorService.HasRequestValidCaptchaEntry(Language.English, DisplayMode.SumOfTwoNumbersToWords))
+                //{
+                //    model.Message = "Please enter the security code as a number.";
+                //    return View(model);
+                //}
+
+                model.Message = "Successfully.";
+                return View(model);
+            }
+            catch (Exception)
+            {
+                model.Message = "Failed.";
+                return View(model);
             }
         }
 

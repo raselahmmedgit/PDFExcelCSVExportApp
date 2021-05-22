@@ -9,5 +9,8 @@ namespace lab.PDFExcelCSVExportApp.ViewModels
         public int Id { get; set; }
         [Display(Name = "Product Name")]
         public string Name { get; set; }
+
+        [Display(Name = "Message")]
+        public string Message { get; set; }
     }
 }
