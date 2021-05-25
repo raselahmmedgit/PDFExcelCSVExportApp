@@ -22,11 +22,13 @@ namespace lab.PDFExcelCSVExportApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IDNTCaptchaValidatorService _validatorService;
+        private readonly IDNTCaptchaApiProvider _apiProvider;
 
-        public HomeController(ILogger<HomeController> logger, IDNTCaptchaValidatorService validatorService)
+        public HomeController(ILogger<HomeController> logger, IDNTCaptchaValidatorService validatorService, IDNTCaptchaApiProvider apiProvider)
         {
             _logger = logger;
             _validatorService = validatorService;
+            _apiProvider = apiProvider;
         }
 
         public IActionResult Index()
@@ -55,7 +57,7 @@ namespace lab.PDFExcelCSVExportApp.Controllers
         {
             try
             {
-                var productViewModeleList = new List<ProductViewModel>() { 
+                var productViewModeleList = new List<ProductViewModel>() {
                     new ProductViewModel{ Id = 1, Name = "A" },
                     new ProductViewModel{ Id = 2, Name = "B" },
                     new ProductViewModel{ Id = 3, Name = "C" }
@@ -74,7 +76,7 @@ namespace lab.PDFExcelCSVExportApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateProduct()
+        public IActionResult DNTCaptcha()
         {
             var productViewModel = new ProductViewModel();
             productViewModel.Id = 1;
@@ -87,7 +89,7 @@ namespace lab.PDFExcelCSVExportApp.Controllers
             ErrorMessage = "Please enter the security code as a number.",
             CaptchaGeneratorLanguage = Language.English,
             CaptchaGeneratorDisplayMode = DisplayMode.SumOfTwoNumbersToWords)]
-        public IActionResult CreateProduct(ProductViewModel model)
+        public IActionResult DNTCaptcha(ProductViewModel model)
         {
             try
             {
@@ -105,6 +107,20 @@ namespace lab.PDFExcelCSVExportApp.Controllers
                 model.Message = "Failed.";
                 return View(model);
             }
+        }
+
+        [HttpGet]
+        public IActionResult DNTCaptchaPartial()
+        {
+            try
+            {
+                return PartialView("_DNTCaptchaPartial");
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -164,5 +180,82 @@ namespace lab.PDFExcelCSVExportApp.Controllers
                 throw;
             }
         }
+
+        [HttpGet]
+        [Route("/Home/DNTCaptchaData")]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true, Duration = 0)]
+        public ActionResult<DNTCaptchaApiResponse> DNTCaptchaData()
+        {
+            try
+            {
+                // Note: For security reasons, a JavaScript client shouldn't be able to provide these attributes directly.
+                // Otherwise an attacker will be able to change them and make them easier!
+                return _apiProvider.CreateDNTCaptcha(new DNTCaptchaTagHelperHtmlAttributes
+                {
+                    Max = 30,
+                    Min = 1,
+                    Language = Language.English,
+                    DisplayMode = DisplayMode.SumOfTwoNumbersToWords,
+                    ValidationErrorMessage = "Please enter the security code as a number.",
+                    FontName = "Tahoma",
+                    FontSize = 24,
+                    ForeColor = "#333333",
+                    BackColor = "#CCCCCC",
+                    UseNoise = true,
+                    UseRelativeUrls = true
+                });
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet]
+        public IActionResult AppCaptcha()
+        {
+            var productViewModel = new ProductViewModel();
+            productViewModel.Id = 1;
+            return View(productViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AppCaptcha(ProductViewModel model)
+        {
+            try
+            {
+                if (!CaptchaHelper.IsValidCaptcha(model.CaptchaToken, model.CaptchaId, model.CaptchaText))
+                {
+                    model.Message = "Please enter the security code as a number.";
+                    return View(model);
+                }
+
+                model.Message = "Successfully.";
+                return View(model);
+            }
+            catch (Exception)
+            {
+                model.Message = "Failed.";
+                return View(model);
+            }
+        }
+
+        [HttpGet]
+        [Route("/Home/AppCaptchaData")]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true, Duration = 0)]
+        public IActionResult AppCaptchaData()
+        {
+            try
+            {
+                var captchaData = CaptchaHelper.GenerateCaptcha();
+                return new JsonResult(captchaData);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
     }
 }

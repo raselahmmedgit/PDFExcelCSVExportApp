@@ -104,5 +104,163 @@ $Product = {
                 return;
             });
 
+    },
+    loadDNTCaptcha: function (contentId) {
+
+        if ($('#' + contentId).length > 0) {
+
+            $.ajax({
+                url: "/Home/DNTCaptchaPartial",
+                type: 'GET',
+                dataType: "html",
+                beforeSend: function () {
+                    //App.LoaderShow();
+                },
+                success: function (result) {
+                    //App.LoaderHide();
+                    if (result != undefined || result != null) {
+                        if ($('#' + contentId).length > 0) {
+                            $('#' + contentId).html('');
+                            $('#' + contentId).html(result);
+                            $('#' + contentId).find('#dntCaptchaRefreshButton').attr('href', '');
+                            $('#' + contentId).show();
+                            $Product.bindDNTCaptchaEvent(contentId);
+                        }
+
+                    }
+                },
+                error: function (error) {
+                    //App.LoaderHide();
+                    console.log(error);
+                }
+
+            });
+
+        }
+    },
+    loadDNTCaptchaJson: function (contentId) {
+
+        if ($('#' + contentId).length > 0) {
+
+            $.ajax({
+                url: "/Home/DNTCaptchaData",
+                type: 'GET',
+                beforeSend: function () {
+                    //App.LoaderShow();
+                },
+                success: function (response) {
+                    //App.LoaderHide();
+                    if (response != undefined || response != null) {
+                        console.log(response);
+                        const {
+                            dntCaptchaImgUrl,
+                            dntCaptchaId,
+                            dntCaptchaTextValue,
+                            dntCaptchaTokenValue,
+                        } = response;
+                        $("#dntCaptchaImg").attr("src", dntCaptchaImgUrl);
+                        $("#DNTCaptchaText").attr("value", dntCaptchaTextValue);
+                        $("#DNTCaptchaToken").attr("value", dntCaptchaTokenValue);
+                        $("div.dntCaptcha").attr("id", dntCaptchaId);
+                        $('#' + contentId).show();
+
+                    }
+                },
+                error: function (error) {
+                    //App.LoaderHide();
+                    console.log(error);
+                }
+
+            });
+
+        }
+    },
+    bindDNTCaptchaEvent: function (contentId) {
+
+        $("#dntCaptchaRefreshButton").on("click", function () {
+
+            var ajaxUrl = $(this).attr('data-ajax-url');
+            $.ajax({
+                url: ajaxUrl,
+                type: 'GET',
+                dataType: "html",
+                beforeSend: function () {
+                    //App.LoaderShow();
+                },
+                success: function (result) {
+                    //App.LoaderHide();
+                    if (result != undefined || result != null) {
+                        if ($('#' + contentId).length > 0) {
+                            $('#' + contentId).html('');
+                            $('#' + contentId).html(result);
+
+                            $('#' + contentId).find('#dntCaptchaRefreshButton').attr('href', '');
+
+                            $('#' + contentId).show();
+
+                            $Product.bindDNTCaptchaEvent(contentId);
+                        }
+
+                    }
+                },
+                error: function (error) {
+                    //App.LoaderHide();
+                    console.log(error);
+                }
+
+            });
+
+            return false;
+        });
+
+    },
+    refreshDNTCaptcha: function () {
+
+        $("#DNTCaptchaInputText").val("");
+        $Product.loadDNTCaptchaJson('dntCaptchaContent2');
+
+    },
+    loadCaptcha: function (contentId) {
+
+        if ($('#' + contentId).length > 0) {
+
+            $.ajax({
+                url: "/Home/AppCaptchaData",
+                type: 'GET',
+                beforeSend: function () {
+                    //App.LoaderShow();
+                },
+                success: function (response) {
+                    //App.LoaderHide();
+                    if (response != undefined || response != null) {
+                        console.log(response);
+                        const {
+                            captchaId,
+                            captchaCode,
+                            captchaImage,
+                            captchaToken,
+                        } = response;
+                        $("#CaptchaImage").attr("src", captchaImage);
+                        $("#CaptchaId").attr("value", captchaId);
+                        $("#CaptchaToken").attr("value", captchaToken);
+                        $("div.Captcha").attr("id", captchaId);
+                        $('#' + contentId).show();
+
+                    }
+                },
+                error: function (error) {
+                    //App.LoaderHide();
+                    console.log(error);
+                }
+
+            });
+
+        }
+    },
+    refreshCaptcha: function () {
+
+        $("#CaptchaText").val("");
+        $Product.loadCaptcha('CaptchaContent');
+
     }
 }

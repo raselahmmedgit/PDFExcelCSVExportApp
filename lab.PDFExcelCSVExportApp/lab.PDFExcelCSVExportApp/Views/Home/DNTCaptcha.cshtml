@@ -1,0 +1,116 @@
+﻿@model lab.PDFExcelCSVExportApp.ViewModels.ProductViewModel
+@{
+    ViewData["Title"] = "DNT Captcha";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12 mt-6">
+        <form method="post" asp-area="" asp-controller="Home" asp-action="DNTCaptcha" class="text-center">
+            <h1 class="mb-3 font-weight-normal">Forgot password</h1>
+            <div class="validation-summary mb-3">
+                <div asp-validation-summary="All" class="text-danger"></div>
+            </div>
+            <div class="form-group mb-3">
+                <label for="Name" class="sr-only">Product Name</label>
+                <input type="text" id="Name" name="Name" class="form-control" placeholder="Product Name" required autofocus>
+            </div>
+            <div class="form-group mb-3">
+                <div id="dntCaptchaContent" style="display: none;"></div>
+                @*<dnt-captcha asp-captcha-generator-max="30"
+                    asp-captcha-generator-min="1"
+                    asp-captcha-generator-language="English"
+                    asp-captcha-generator-display-mode="SumOfTwoNumbersToWords"
+                    asp-use-relative-urls="true"
+                    asp-placeholder="Security code as a number"
+                    asp-validation-error-message="Please enter the security code as a number."
+                    asp-font-name="Tahoma"
+                    asp-font-size="60"
+                    asp-fore-color="#333333"
+                    asp-back-color="#CCCCCC"
+                    asp-text-box-class="form-control"
+                    asp-text-box-template="{0}"
+                    asp-validation-message-class="text-danger"
+                    asp-refresh-button-class=""
+                    asp-use-noise="true" asp-dir="ltr" />*@
+            </div>
+            <div class="form-group mb-3">
+                <div id="dntCaptchaContent2" style="display: none;">
+                    <div class="dntCaptcha">
+                        <img alt="captcha"
+                             id="dntCaptchaImg"
+                             name="dntCaptchaImg" />
+                        <a class=""
+                           id="dntCaptchaRefreshButton"
+                           name="dntCaptchaRefreshButton"
+                           onclick="$Product.refreshDNTCaptcha()"></a>
+                        <input id="DNTCaptchaText" name="DNTCaptchaText" type="hidden" />
+                        <input autocomplete="off"
+                               class="form-control"
+                               dir="ltr"
+                               id="DNTCaptchaInputText"
+                               name="DNTCaptchaInputText"
+                               placeholder="Security Code"
+                               required="required"
+                               type="text"
+                               data-required-msg="Please enter the security code as a number."
+                               data-val="true"
+                               data-val-required="Please enter the security code as a number." />
+                        <span class="text-danger" data-valmsg-for="DNTCaptchaInputText" data-valmsg-replace="true"></span>
+                        <input id="DNTCaptchaToken" name="DNTCaptchaToken" type="hidden" />
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5">
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@*<div class="col-lg-12 col-md-12 col-sm-12 mb-3">
+    <div class="form-group" style="margin-bottom: 0px;">
+        <div id="dntCaptchaContent" style="display: none;">
+            <div class="dntCaptcha">
+                <img alt="captcha" id="dntCaptchaImg" name="dntCaptchaImg" />
+                <a id="dntCaptchaRefreshButton" name="dntCaptchaRefreshButton" onclick="App.RefreshDNTCaptcha();"></a>
+                <input id="DNTCaptchaText" name="DNTCaptchaText" type="hidden" />
+                <input autocomplete="off" class="form-control form-control-lg" data-val="true" data-val-required="Please enter the security code as a number." dir="ltr" id="DNTCaptchaInputText" name="DNTCaptchaInputText" placeholder="Security Code" required="required" type="text" />
+                <input id="DNTCaptchaToken" name="DNTCaptchaToken" type="hidden" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-12 col-md-12 col-sm-12 mb-3"><div class="form-group" style="margin-bottom: 0px;"><div id="dntCaptchaContent" style="display: none;"><div class="dntCaptcha"><img alt="captcha" id="dntCaptchaImg" name="dntCaptchaImg" /><a id="dntCaptchaRefreshButton" name="dntCaptchaRefreshButton" onclick="App.RefreshDNTCaptcha();"></a><input id="DNTCaptchaText" name="DNTCaptchaText" type="hidden" /><input autocomplete="off" class="form-control form-control-lg" data-val="true" data-val-required="Please enter the security code as a number." dir="ltr" id="DNTCaptchaInputText" name="DNTCaptchaInputText" placeholder="Security Code" required="required" type="text" /><input id="DNTCaptchaToken" name="DNTCaptchaToken" type="hidden" /></div></div></div></div>
+
+<div class="col-xl-12 col-lg-12 col-md-12">
+    <div id="dntCaptchaContent" style="display: none;">
+        <div class="dntCaptcha">
+            <img alt="captcha" id="dntCaptchaImg" name="dntCaptchaImg" />
+            <a id="dntCaptchaRefreshButton" name="dntCaptchaRefreshButton" onclick="App.RefreshDNTCaptcha();"></a>
+            <input id="DNTCaptchaText" name="DNTCaptchaText" type="hidden" />
+            <input autocomplete="off" class="form-control" data-val="true" data-val-required="Please enter the security code as a number." dir="ltr" id="DNTCaptchaInputText" name="DNTCaptchaInputText" placeholder="Security Code" required="required" type="text" />
+            <div class="field-validation-valid" data-valmsg-for="DNTCaptchaInputText" data-valmsg-replace="true"></div>
+            <input id="DNTCaptchaToken" name="DNTCaptchaToken" type="hidden" />
+        </div>
+    </div>>
+</div>
+
+<div class="col-xl-12 col-lg-12 col-md-12"><div id="dntCaptchaContent" style="display: none;"><div class="dntCaptcha"><img alt="captcha" id="dntCaptchaImg" name="dntCaptchaImg" /><a id="dntCaptchaRefreshButton" name="dntCaptchaRefreshButton" onclick="App.RefreshDNTCaptcha();"></a><input id="DNTCaptchaText" name="DNTCaptchaText" type="hidden" /><input autocomplete="off" class="form-control" data-val="true" data-val-required="Please enter the security code as a number." dir="ltr" id="DNTCaptchaInputText" name="DNTCaptchaInputText" placeholder="Security Code" required="required" type="text" /><div class="field-validation-valid" data-valmsg-for="DNTCaptchaInputText" data-valmsg-replace="true"></div><input id="DNTCaptchaToken" name="DNTCaptchaToken" type="hidden" /></div></div>></div>
+
+<form class="justify-content-center" data-ajax="true" data-ajax-begin="App.LoaderShow();" data-ajax-complete="App.LoaderHide();" data-ajax-failure="App.LoaderHide();" data-ajax-success="App.AjaxFormPostSuccess(data); App.AjaxFormReset('employment-application-form'); App.RefreshDNTCaptcha();" data-ajax-url="/Employment/Application" id="employment-application-form" method="post" novalidate="novalidate">
+</form>*@
+
+@section Scripts {
+    <script src="~/js/Product.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function (e) {
+            //$Product.loadDNTCaptcha('dntCaptchaContent');
+            $Product.loadDNTCaptchaJson('dntCaptchaContent2');
+        });
+
+    </script>
+}

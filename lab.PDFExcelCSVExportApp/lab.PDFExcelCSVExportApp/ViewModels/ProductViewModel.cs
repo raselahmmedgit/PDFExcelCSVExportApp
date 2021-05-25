@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace lab.PDFExcelCSVExportApp.ViewModels
 {
-    public class ProductViewModel
+    public class ProductViewModel : CaptchaViewModel
     {
         [Display(Name = "Product Id")]
         public int Id { get; set; }

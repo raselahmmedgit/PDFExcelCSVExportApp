@@ -1,0 +1,89 @@
+﻿@model lab.PDFExcelCSVExportApp.ViewModels.ProductViewModel
+@{
+    ViewData["Title"] = "Create Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12 mt-6">
+        <form method="post" asp-area="" asp-controller="Home" asp-action="AppCaptcha" class="text-center">
+            <h1 class="mb-3 font-weight-normal">Forgot password</h1>
+            <div class="validation-summary mb-3">
+                <div asp-validation-summary="All" class="text-danger"></div>
+            </div>
+            <div class="form-group mb-3">
+                <label for="Name" class="sr-only">Product Name</label>
+                <input type="text" id="Name" name="Name" class="form-control" placeholder="Product Name" required autofocus>
+            </div>
+            
+            <div class="form-group mb-3">
+                <div id="CaptchaContent" style="display: none;">
+                    <div class="Captcha">
+                        <img alt="captcha"
+                             id="CaptchaImage"
+                             name="CaptchaImage" />
+                        <a class=""
+                           id="CaptchaRefreshButton"
+                           name="CaptchaRefreshButton"
+                           onclick="$Product.refreshCaptcha()"></a>
+                        <input autocomplete="off"
+                               class="form-control"
+                               id="CaptchaText"
+                               name="CaptchaText"
+                               placeholder="Security Code"
+                               required="required"
+                               type="text"
+                               data-required-msg="Please enter the security code as a number."
+                               data-val="true"
+                               data-val-required="Please enter the security code as a number." />
+                        <span class="text-danger" data-valmsg-for="CaptchaText" data-valmsg-replace="true"></span>
+                        <input id="CaptchaId" name="CaptchaId" type="hidden" />
+                        <input id="CaptchaToken" name="CaptchaToken" type="hidden" />
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5">
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="col-lg-12 col-md-12 col-sm-12 mb-3">
+    <div class="form-group" style="margin-bottom: 0px;">
+        <div id="CaptchaContent" style="display: none;">
+            <div class="Captcha">
+                <img alt="captcha" id="CaptchaImage" name="CaptchaImage" />
+                <a id="CaptchaRefreshButton" name="CaptchaRefreshButton" onclick="App.RefreshCaptcha();"></a>
+                <input autocomplete="off" class="form-control form-control-lg" data-val="true" data-val-required="Please enter the security code as a number." id="CaptchaText" name="CaptchaText" placeholder="Security Code" required="required" type="text" />
+                <input id="CaptchaId" name="CaptchaId" type="hidden" />
+                <input id="CaptchaToken" name="CaptchaToken" type="hidden" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-xl-12 col-lg-12 col-md-12">
+    <div id="CaptchaContent" style="display: none;">
+        <div class="Captcha">
+            <img alt="captcha" id="CaptchaImage" name="CaptchaImage" />
+            <a id="CaptchaRefreshButton" name="CaptchaRefreshButton" onclick="App.RefreshCaptcha();"></a>
+            <input autocomplete="off" class="form-control" data-val="true" data-val-required="Please enter the security code as a number." dir="ltr" id="CaptchaText" name="CaptchaText" placeholder="Security Code" required="required" type="text" />
+            <div class="field-validation-valid" data-valmsg-for="CaptchaText" data-valmsg-replace="true"></div>
+            <input id="CaptchaId" name="CaptchaId" type="hidden" />
+            <input id="CaptchaToken" name="CaptchaToken" type="hidden" />
+        </div>
+    </div>>
+</div>
+
+@section Scripts {
+    <script src="~/js/Product.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function (e) {
+            $Product.loadCaptcha('CaptchaContent');
+        });
+
+    </script>
+}

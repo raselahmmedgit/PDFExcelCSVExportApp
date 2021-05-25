@@ -129,11 +129,32 @@ body {
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.4);
     }
 
-.dntCaptcha .btn-refresh {
-    padding: 24px;
-    margin: 5px;
+.dntCaptcha #dntCaptchaRefreshButton {
+    padding: 18px;
+    margin: 0px 0px 0px 20px;
     background-image: url(../images/refresh.png);
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
+    cursor: pointer;
+}
+
+
+.dntCaptcha #dntCaptchaImg {
+    margin: 0px 0px 15px 0px !important;
+}
+
+.Captcha #CaptchaRefreshButton {
+    padding: 18px;
+    margin: 0px 0px 0px 20px;
+    background-image: url(../images/refresh.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+}
+
+
+.Captcha #CaptchaImage {
+    margin: 0px 0px 15px 0px !important;
 }

@@ -32,9 +32,9 @@ namespace lab.PDFExcelCSVExportApp
                 // options.UseMemoryCacheStorageProvider(); // -> It relies on the server's times. It's safer than the CookieStorageProvider.
                 options.UseCookieStorageProvider(); // -> It relies on the server and client's times. It's ideal for scalability, because it doesn't save anything in the server's memory.
                 // options.UseDistributedCacheStorageProvider(); // --> It's ideal for scalability using `services.AddStackExchangeRedisCache()` for instance.
-                // options.UseDistributedSerializationProvider();
+                options.UseDistributedSerializationProvider();
                 options.WithEncryptionKey("Qwer!234");
-                options.ShowThousandsSeparators(false);
+                //options.ShowThousandsSeparators(false);
             });
 
             services.AddControllersWithViews();
