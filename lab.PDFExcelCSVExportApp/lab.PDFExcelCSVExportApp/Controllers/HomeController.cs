@@ -33,7 +33,74 @@ namespace lab.PDFExcelCSVExportApp.Controllers
 
         public IActionResult Index()
         {
+            var notificationSendDate = ConvertNotificationSendDate8To18();
+
             return View();
+        }
+
+        private DateTime ConvertNotificationSendDate8To18()
+        {
+            try
+            {
+                DateTime dateTime = DateTime.UtcNow;
+
+                var dateTimeUtc = dateTime.AddDays(Convert.ToInt32(5));
+                var dateTimeUtcToCst = ConvertToUSACSTDateTime(dateTimeUtc);
+                int startValue = 8;
+                int endValue = 18;
+                TimeSpan startTimeSpan = new TimeSpan(startValue, 0, 0); //8 o'clock
+                TimeSpan endTimeSpan = new TimeSpan(endValue, 0, 0); //18 o'clock
+                TimeSpan dateTimeUtcToCstTimeSpan = dateTimeUtcToCst.TimeOfDay;
+
+                if ((dateTimeUtcToCstTimeSpan > startTimeSpan) && (dateTimeUtcToCstTimeSpan < endTimeSpan))
+                {
+                    //match found
+                    dateTime = ConvertToUtcDateTime(dateTimeUtc);
+                }
+                else
+                {
+                    //do not match found
+                    Random random = new Random();
+                    int randomValue = random.Next(startValue, endValue);
+                    TimeSpan randomTimeSpan = new TimeSpan(randomValue, 0, 0);
+
+                    var dateTimeUtcToCstRandom = dateTimeUtcToCst.Date + randomTimeSpan;
+                    dateTime = ConvertToUtcDateTime(dateTimeUtcToCstRandom);
+                }
+
+                return dateTime;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private DateTime ConvertToUtcDateTime(DateTime dateTime)
+        {
+            if (dateTime != default(DateTime))
+            {
+                dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Local);
+                DateTime time = TimeZoneInfo.ConvertTimeToUtc(dateTime);
+                return time;
+            }
+            else
+            {
+                return DateTime.UtcNow;
+            }
+        }
+
+        private DateTime ConvertToUSACSTDateTime(DateTime dateTime)
+        {
+            if (dateTime != default(DateTime))
+            {
+                var CSTDateTime = TimeZoneInfo.ConvertTimeFromUtc(Convert.ToDateTime(dateTime), TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
+                return CSTDateTime;
+            }
+            else
+            {
+                return DateTime.UtcNow;
+            }
         }
 
         [HttpGet]
