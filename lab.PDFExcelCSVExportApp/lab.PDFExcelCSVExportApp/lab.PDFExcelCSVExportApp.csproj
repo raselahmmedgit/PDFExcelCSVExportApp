@@ -9,7 +9,10 @@
     <PackageReference Include="DataTables.AspNet.AspNetCore" Version="2.0.2" />
     <PackageReference Include="DataTables.AspNet.Core" Version="2.0.2" />
     <PackageReference Include="DNTCaptcha.Core" Version="3.7.0" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.5" />
+    <PackageReference Include="QRCodeDecoderLibrary" Version="2.0.1" />
+    <PackageReference Include="QRCodeEncoderLibrary" Version="2.0.1" />
   </ItemGroup>
 
 </Project>

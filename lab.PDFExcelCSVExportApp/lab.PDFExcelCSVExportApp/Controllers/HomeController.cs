@@ -6,6 +6,8 @@ using DNTCaptcha.Core;
 using lab.PDFExcelCSVExportApp.Helpers;
 using lab.PDFExcelCSVExportApp.Models;
 using lab.PDFExcelCSVExportApp.ViewModels;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -23,12 +25,14 @@ namespace lab.PDFExcelCSVExportApp.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IDNTCaptchaValidatorService _validatorService;
         private readonly IDNTCaptchaApiProvider _apiProvider;
+        private readonly IWebHostEnvironment _iWebHostEnvironment;
 
-        public HomeController(ILogger<HomeController> logger, IDNTCaptchaValidatorService validatorService, IDNTCaptchaApiProvider apiProvider)
+        public HomeController(ILogger<HomeController> logger, IDNTCaptchaValidatorService validatorService, IDNTCaptchaApiProvider apiProvider, IWebHostEnvironment iWebHostEnvironment)
         {
             _logger = logger;
             _validatorService = validatorService;
             _apiProvider = apiProvider;
+            _iWebHostEnvironment = iWebHostEnvironment;
         }
 
         public IActionResult Index()
@@ -104,9 +108,9 @@ namespace lab.PDFExcelCSVExportApp.Controllers
         }
 
         [HttpGet]
-        [Route("/Home/GetDataAsync")]
+        [Route("/Home/GetDataTableAjax")]
         [ResponseCache(NoStore = true, Duration = 0)]
-        public IActionResult GetDataAsync(IDataTablesRequest request)
+        public IActionResult GetDataTableAjax(IDataTablesRequest request)
         {
             try
             {
@@ -324,5 +328,41 @@ namespace lab.PDFExcelCSVExportApp.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult QrBarCodeFromPdf()
+        {
+            var result = new Result();
+            try
+            {
+                //IFormFile file = Request.Form.Files[0];
+                string folderName = "upload";
+                string webRootPath = _iWebHostEnvironment.WebRootPath;
+                string uploadFolderPath = Path.Combine(webRootPath, folderName);
+
+                StringBuilder sb = new StringBuilder();
+                if (!Directory.Exists(uploadFolderPath))
+                {
+                    Directory.CreateDirectory(uploadFolderPath);
+                }
+
+                string fileName = "Bloom Richard_5925 Seaside Drive_C020_2889_170001_1_20211130_130730.pdf";
+                string fileFullPath = Path.Combine(uploadFolderPath, fileName);
+
+                string fileExtension = Path.GetExtension(fileFullPath).ToLower();
+
+                if (fileExtension == ".pdf")
+                {
+                    result = QrBarCodeHelper.QrBarCodeFromPdf(uploadFolderPath, fileFullPath);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result = Result.Fail();
+            }
+
+            var json = new { success = result.Success, message = result.Message, messagetype = result.MessageType, data = result.Data };
+            return new JsonResult(json);
+        }
     }
 }
