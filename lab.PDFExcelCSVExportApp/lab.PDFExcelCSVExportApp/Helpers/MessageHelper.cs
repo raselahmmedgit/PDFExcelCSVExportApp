@@ -69,7 +69,7 @@
         public static string UserExists = "Email is already taken. Please choose another email!";
         public static string UserNotExists = "Email is available!";
 
-        public static string BarCodeScanner = "Bar code scanner successfully!";
-        public static string BarCodeScannerFail = "Bar code scanner failed!";
+        public static string BarCodeRead = "QR/Bar code read successfully!";
+        public static string BarCodeReadFail = "QR/Bar code read failed!";
     }
 }

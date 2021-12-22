@@ -1,5 +1,4 @@
 ﻿using iTextSharp.text.pdf;
-using QRCodeDecoderLibrary;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -11,6 +10,74 @@ namespace lab.PDFExcelCSVExportApp.Helpers
 {
     public static class QrBarCodeHelper
     {
+        public static string GenerateQrCodeToPdf(string qrCodeInfo, string qrCodeOutputFullPath)
+        {
+            try
+            {
+                QRCodeEncoderLibrary.QREncoder qREncoder = new QRCodeEncoderLibrary.QREncoder();
+                qREncoder.ErrorCorrection = QRCodeEncoderLibrary.ErrorCorrection.Q;
+                qREncoder.ModuleSize = 4;
+                qREncoder.QuietZone = 16;
+
+                //byte[] qrCodeInfoByteArray = Encoding.UTF8.GetBytes(qrCodeInfo);
+                qREncoder.Encode(qrCodeInfo);
+
+                // save the barcode to PNG file
+                // This method DOES NOT use Bitmap class and is suitable for net-core and net-standard
+                // It produces files significantly smaller than SaveQRCodeToFile.
+                qREncoder.SaveQRCodeToPngFile(qrCodeOutputFullPath);
+
+                return "QR/Bar code generate successfully!";
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return "QR/Bar code generate failed!";
+        }
+
+        public static Result GetQrBarCodeFromPdf(string fileFullPath, string outputFullPath)
+        {
+            try
+            {
+                //get images from source2.pdf  
+                Image qrCodeImg = GetImagesNew(fileFullPath);
+                
+                if (qrCodeImg != null)
+                {
+                    // create QR Code decoder object
+                    QRCodeDecoderLibrary.QRDecoder qRDecoder = new QRCodeDecoderLibrary.QRDecoder();
+
+                    using (var image = qrCodeImg)
+                    {
+                        Bitmap bitmapImage = new Bitmap(image);
+
+                        // call image decoder methos with <code>Bitmap</code> image of QRCode barcode
+                        byte[][] dataByteArray = qRDecoder.ImageDecoder(bitmapImage);
+
+                        string qrCodeResult = ByteArrayToStr(dataByteArray[0]);
+
+                        File.WriteAllText(outputFullPath, qrCodeResult);
+                        
+                        image.Dispose();
+                        
+                        return Result.Ok(MessageHelper.BarCodeRead, qrCodeResult);
+                    }
+
+                }
+                else
+                {
+                    return Result.Fail(MessageHelper.BarCodeReadFail);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public static Result QrBarCodeFromPdf(string uploadFolderPath, string fileFullPath)
         {
             try
@@ -32,7 +99,7 @@ namespace lab.PDFExcelCSVExportApp.Helpers
                     if (imageExist)
                     {
                         // create QR Code decoder object
-                        QRDecoder qRDecoder = new QRDecoder();
+                        QRCodeDecoderLibrary.QRDecoder qRDecoder = new QRCodeDecoderLibrary.QRDecoder();
 
                         using (var image = Image.FromFile(Path.Combine(barCodeImgFullPath120x124)))
                         {
@@ -43,17 +110,17 @@ namespace lab.PDFExcelCSVExportApp.Helpers
 
                             string qrCodeResult = ByteArrayToStr(dataByteArray[0]);
 
-                            return Result.Ok(MessageHelper.BarCodeScanner, qrCodeResult);
+                            return Result.Ok(MessageHelper.BarCodeRead, qrCodeResult);
                         }
                             
                     }
 
-                    return Result.Fail(MessageHelper.BarCodeScannerFail);
+                    return Result.Fail(MessageHelper.BarCodeReadFail);
 
                 }
                 else
                 {
-                    return Result.Fail(MessageHelper.BarCodeScannerFail);
+                    return Result.Fail(MessageHelper.BarCodeReadFail);
                 }
             }
             catch (Exception)
@@ -72,17 +139,15 @@ namespace lab.PDFExcelCSVExportApp.Helpers
             return new string(CharArray);
         }
 
-        private static string GetImages(string uploadFolderPath, string fileFullPath, int pageNumber = 1)
+        private static Image GetImagesNew(string fileFullPath, int pageNumber = 1)
         {
-            string barCodeImgFullPath = string.Empty;
-
             PdfReader pdfReader = new PdfReader(fileFullPath);
             PdfDictionary pdfDictionary = pdfReader.GetPageN(pageNumber);
             PdfDictionary pdfResources = (PdfDictionary)PdfReader.GetPdfObject(pdfDictionary.Get(PdfName.RESOURCES));
             PdfDictionary pdfXobject = (PdfDictionary)PdfReader.GetPdfObject(pdfResources.Get(PdfName.XOBJECT));
             if (pdfXobject == null)
             {
-                return barCodeImgFullPath; 
+                return null; 
             }
             
             foreach (PdfName pdfName in pdfXobject.Keys)
@@ -109,6 +174,55 @@ namespace lab.PDFExcelCSVExportApp.Helpers
                 using (MemoryStream memoryStream = new MemoryStream(bytes))
                 {
                     memoryStream.Position = 0;
+                    
+                    Image pdfImg = Image.FromStream(memoryStream);
+
+                    Image qrCodeImg = ImageHelper.CropImageWithByImage(pdfImg, 0, 0, 120, 124);
+
+                    return qrCodeImg;
+                }
+            }
+
+            return null;
+        }
+
+        private static string GetImages(string uploadFolderPath, string fileFullPath, int pageNumber = 1)
+        {
+            string barCodeImgFullPath = string.Empty;
+
+            PdfReader pdfReader = new PdfReader(fileFullPath);
+            PdfDictionary pdfDictionary = pdfReader.GetPageN(pageNumber);
+            PdfDictionary pdfResources = (PdfDictionary)PdfReader.GetPdfObject(pdfDictionary.Get(PdfName.RESOURCES));
+            PdfDictionary pdfXobject = (PdfDictionary)PdfReader.GetPdfObject(pdfResources.Get(PdfName.XOBJECT));
+            if (pdfXobject == null)
+            {
+                return barCodeImgFullPath;
+            }
+
+            foreach (PdfName pdfName in pdfXobject.Keys)
+            {
+                PdfObject pdfObject = pdfXobject.Get(pdfName);
+                if (!pdfObject.IsIndirect())
+                {
+                    continue;
+                }
+
+                PdfDictionary tg = (PdfDictionary)PdfReader.GetPdfObject(pdfObject);
+                PdfName pdfSubtype = (PdfName)PdfReader.GetPdfObject(tg.Get(PdfName.SUBTYPE));
+                if (!pdfSubtype.Equals(PdfName.IMAGE))
+                {
+                    continue;
+                }
+
+                int xrefIndex = Convert.ToInt32(((PRIndirectReference)pdfObject).Number.ToString(System.Globalization.CultureInfo.InvariantCulture));
+
+                PdfObject pdfObj = pdfReader.GetPdfObject(xrefIndex);
+                PdfStream pdfStrem = (PdfStream)pdfObj;
+                byte[] bytes = PdfReader.GetStreamBytesRaw((PRStream)pdfStrem);
+                if (bytes == null) { continue; }
+                using (MemoryStream memoryStream = new MemoryStream(bytes))
+                {
+                    memoryStream.Position = 0;
                     Image img = Image.FromStream(memoryStream);
 
                     //string fileName = Path.Combine(String.Format(@"Bloom-Richard-QrCode-{0}.jpg", pageNumber));
@@ -127,6 +241,5 @@ namespace lab.PDFExcelCSVExportApp.Helpers
 
             return barCodeImgFullPath;
         }
-
     }
 }

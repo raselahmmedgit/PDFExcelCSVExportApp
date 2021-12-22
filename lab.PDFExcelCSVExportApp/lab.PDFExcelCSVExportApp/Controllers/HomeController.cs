@@ -329,32 +329,38 @@ namespace lab.PDFExcelCSVExportApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult QrBarCodeFromPdf()
+        public IActionResult QrBarCodeFromPdf(string qrFilePath, string qrOutPutFilePath)
         {
             var result = new Result();
             try
             {
-                //IFormFile file = Request.Form.Files[0];
-                string folderName = "upload";
-                string webRootPath = _iWebHostEnvironment.WebRootPath;
-                string uploadFolderPath = Path.Combine(webRootPath, folderName);
+                //string folderName = "upload";
+                //string webRootPath = _iWebHostEnvironment.WebRootPath;
+                //string uploadFolderPath = Path.Combine(webRootPath, folderName);
+                //StringBuilder sb = new StringBuilder();
+                //if (!Directory.Exists(uploadFolderPath))
+                //{
+                //    Directory.CreateDirectory(uploadFolderPath);
+                //}
+                //string fileName = "Bloom Richard_5925 Seaside Drive_C020_2889_170001_1_20211130_130730.pdf";
+                //string fileFullPath = Path.Combine(uploadFolderPath, fileName);
 
-                StringBuilder sb = new StringBuilder();
-                if (!Directory.Exists(uploadFolderPath))
-                {
-                    Directory.CreateDirectory(uploadFolderPath);
-                }
+                //string fileExtension = Path.GetExtension(fileFullPath).ToLower();
 
-                string fileName = "Bloom Richard_5925 Seaside Drive_C020_2889_170001_1_20211130_130730.pdf";
-                string fileFullPath = Path.Combine(uploadFolderPath, fileName);
+                //if (fileExtension == ".pdf")
+                //{
+                //    result = QrBarCodeHelper.QrBarCodeFromPdf(uploadFolderPath, fileFullPath);
+                //}
 
-                string fileExtension = Path.GetExtension(fileFullPath).ToLower();
+                string qrCodeInfo = @"This is Bloom Richard QR Code";
+                string qrCodeOutputFullPath = @"C:\temp\Bloom Richard QR Code.png";
 
-                if (fileExtension == ".pdf")
-                {
-                    result = QrBarCodeHelper.QrBarCodeFromPdf(uploadFolderPath, fileFullPath);
-                }
+                string aa = QrBarCodeHelper.GenerateQrCodeToPdf(qrCodeInfo, qrCodeOutputFullPath);
 
+                string fileFullPath = @"C:\temp\Bloom Richard_5925 Seaside Drive_C020_2889_170001_1_20211130_130730.pdf";
+                string outputFullPath = @"C:\temp\Bloom Richard QR Code.txt";
+
+                result = QrBarCodeHelper.GetQrBarCodeFromPdf(fileFullPath, outputFullPath);
             }
             catch (Exception ex)
             {

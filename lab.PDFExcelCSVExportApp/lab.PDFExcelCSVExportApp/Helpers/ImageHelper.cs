@@ -50,10 +50,10 @@ namespace lab.PDFExcelCSVExportApp.Helpers
                 int destWidth = (int)Math.Round(sourceWidth * nScale);
                 int destHeight = (int)Math.Round(sourceHeight * nScale);
 
-                Bitmap bmPhoto = null;
-                bmPhoto = new Bitmap(destWidth + (int)Math.Round(2 * destX), destHeight + (int)Math.Round(2 * destY));
+                Bitmap cropBitmap = null;
+                cropBitmap = new Bitmap(destWidth + (int)Math.Round(2 * destX), destHeight + (int)Math.Round(2 * destY));
 
-                using (Graphics grPhoto = Graphics.FromImage(bmPhoto))
+                using (Graphics grPhoto = Graphics.FromImage(cropBitmap))
                 {
                     grPhoto.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     grPhoto.CompositingQuality = CompositingQuality.HighQuality;
@@ -68,7 +68,7 @@ namespace lab.PDFExcelCSVExportApp.Helpers
 
                 //Crops the image
                 string savedPath = folderPath + newFileName;
-                bmPhoto.Save(Path.Combine(webRootPath, savedPath));
+                cropBitmap.Save(Path.Combine(webRootPath, savedPath));
                 return "~/" + savedPath;
             }
         }
@@ -82,30 +82,60 @@ namespace lab.PDFExcelCSVExportApp.Helpers
 
                 Rectangle cropRectangle = new Rectangle(cropX, cropY, cropWidth, cropHeight);
                 
-                //First we define a rectangle with the help of already calculated points  
-                Bitmap originalImage = new Bitmap(image, sourceWidth, sourceHeight);
+                Bitmap originalBitmap = new Bitmap(image, sourceWidth, sourceHeight);
                 
-                //Original image  
-                Bitmap cropImgage = new Bitmap(cropWidth, cropHeight);
+                Bitmap cropBitmap = new Bitmap(cropWidth, cropHeight);
                 
                 // for cropinf image
-                using (Graphics grPhoto = Graphics.FromImage(cropImgage))
+                using (Graphics grPhoto = Graphics.FromImage(cropBitmap))
                 {
                     grPhoto.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     grPhoto.CompositingQuality = CompositingQuality.HighQuality;
                     grPhoto.SmoothingMode = SmoothingMode.HighQuality;
                     grPhoto.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                    grPhoto.DrawImage(originalImage, cropX, cropY, cropRectangle, GraphicsUnit.Pixel);
+                    grPhoto.DrawImage(originalBitmap, cropX, cropY, cropRectangle, GraphicsUnit.Pixel);
                     image.Dispose();
                 }
 
                 //Crops the image
                 string savedPath = folderPath + newFileName;
-                cropImgage.Save(Path.Combine(webRootPath, savedPath));
+                cropBitmap.Save(Path.Combine(webRootPath, savedPath));
                 string savedFullPath = Path.Combine(webRootPath, savedPath);
 
                 return savedFullPath;
+            }
+        }
+
+        public static Image CropImageWithByImage(Image pdfImage, int cropX, int cropY, int cropWidth, int cropHeight)
+        {
+            using (var image = pdfImage)
+            {
+                int sourceWidth = (int)image.Width;
+                int sourceHeight = (int)image.Height;
+
+                Rectangle cropRectangle = new Rectangle(cropX, cropY, cropWidth, cropHeight);
+
+                Bitmap originalBitmap = new Bitmap(image, sourceWidth, sourceHeight);
+
+                Bitmap cropBitmap = new Bitmap(cropWidth, cropHeight);
+
+                // for cropinf image
+                using (Graphics grPhoto = Graphics.FromImage(cropBitmap))
+                {
+                    grPhoto.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    grPhoto.CompositingQuality = CompositingQuality.HighQuality;
+                    grPhoto.SmoothingMode = SmoothingMode.HighQuality;
+                    grPhoto.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                    grPhoto.DrawImage(originalBitmap, cropX, cropY, cropRectangle, GraphicsUnit.Pixel);
+
+                    image.Dispose();
+                }
+
+                Image cropImg = (Image)cropBitmap;
+
+                return cropImg;
             }
         }
 
